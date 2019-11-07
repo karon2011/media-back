@@ -14,19 +14,26 @@ export class Users extends Entity {
     type: 'string',
     required: true,
   })
-  firstName: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  lastName: string;
+  userName: string;
 
   @property({
     type: 'string',
     required: true,
   })
   email: string;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  firstName: string;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  lastName: string;
+
 
   @property({
     type: 'string',
