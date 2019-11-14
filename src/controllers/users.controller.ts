@@ -1,36 +1,33 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  post,
-  param,
-  get,
-  getFilterSchemaFor,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  patch,
-  put,
-  del,
-  requestBody,
-} from '@loopback/rest';
-import {Users} from '../models';
-import {UsersRepository} from '../repositories';
+import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
+import { post, param, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, patch, put, del, requestBody } from '@loopback/rest';
+
+import { inject } from '@loopback/context';
+import { authenticate, AuthenticationBindings } from '@loopback/authentication';
+import { UserProfile, SecurityBindings, securityId } from '@loopback/security';
+
+import { Users } from '../models';
+import { UsersRepository } from '../repositories';
 
 export class UsersController {
   constructor(
     @repository(UsersRepository)
-    public usersRepository : UsersRepository,
-  ) {}
+    public usersRepository: UsersRepository,
+    // After extracting the CURRENT_USER key to module `@loopback/security`,
+    // `AuthenticationBindings.CURRENT_USER` is turned to an alias of
+    // `SecurityBindings.USER`
+
+    // Note: If only some of the controller methods are decorated
+    // @inject(AuthenticationBindings.CURRENT_USER, { optional: true })
+    //  Or ???
+    @inject(SecurityBindings.USER, { optional: true })
+    private userProfile: UserProfile,
+  ) { }
 
   @post('/users', {
     responses: {
       '200': {
         description: 'Users model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Users)}},
+        content: { 'application/json': { schema: getModelSchemaRef(Users) } },
       },
     },
   })
@@ -40,7 +37,7 @@ export class UsersController {
         'application/json': {
           schema: getModelSchemaRef(Users, {
             title: 'NewUsers',
-            
+
           }),
         },
       },
@@ -54,7 +51,7 @@ export class UsersController {
     responses: {
       '200': {
         description: 'Users model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -64,13 +61,14 @@ export class UsersController {
     return this.usersRepository.count(where);
   }
 
+  @authenticate('BasicStrategy', {})
   @get('/users', {
     responses: {
       '200': {
         description: 'Array of Users model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Users)},
+            schema: { type: 'array', items: getModelSchemaRef(Users) },
           },
         },
       },
@@ -80,13 +78,14 @@ export class UsersController {
     @param.query.object('filter', getFilterSchemaFor(Users)) filter?: Filter<Users>,
   ): Promise<Users[]> {
     return this.usersRepository.find(filter);
+    // return this.userProfile.securityId;
   }
 
   @patch('/users', {
     responses: {
       '200': {
         description: 'Users PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -94,7 +93,7 @@ export class UsersController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Users, {partial: true}),
+          schema: getModelSchemaRef(Users, { partial: true }),
         },
       },
     })
@@ -108,7 +107,7 @@ export class UsersController {
     responses: {
       '200': {
         description: 'Users model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Users)}},
+        content: { 'application/json': { schema: getModelSchemaRef(Users) } },
       },
     },
   })
@@ -128,7 +127,7 @@ export class UsersController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Users, {partial: true}),
+          schema: getModelSchemaRef(Users, { partial: true }),
         },
       },
     })

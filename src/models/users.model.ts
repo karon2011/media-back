@@ -34,7 +34,6 @@ export class Users extends Entity {
   })
   lastName: string;
 
-
   @property({
     type: 'string',
     required: true,
@@ -52,11 +51,6 @@ export class Users extends Entity {
   })
   birthday?: string;
 
-  // Define well-known properties here
-
-  // Indexer property to allow additional data
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [prop: string]: any;
 
   constructor(data?: Partial<Users>) {
     super(data);

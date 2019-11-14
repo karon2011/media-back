@@ -9,13 +9,17 @@ import { RestApplication } from '@loopback/rest';
 import { ServiceMixin } from '@loopback/service-proxy';
 import * as path from 'path';
 import { MySequence } from './sequence';
-import { RecordsRepository } from './repositories';
+import { AuthenticationComponent } from '@loopback/authentication';
+// import { RecordsRepository } from './repositories';
 
 export class StartApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
+
+    // Bind authentication component related elements
+    this.component(AuthenticationComponent);
 
     // Set up the custom sequence
     this.sequence(MySequence);
